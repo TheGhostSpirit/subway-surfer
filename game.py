@@ -7,13 +7,13 @@ SPRITE_SIZE = 80
 
 MAP = """
     ##.##
-    ##o##
-    ##o##
-    ##To#
-    ###M#
-    ###o#
+    MMoMM
+    M#o#M
+    #MMo#
+    ##MM#
+    #MMo#
     M#M#M
-    ##o#M
+    #Mo#M
     #MM##
     ####o
 """
@@ -29,9 +29,9 @@ RIGHT = 'R'
 ACTIONS = [NOTHING, LEFT, RIGHT]
 
 REWARD_OUT = -100
-REWARD_METEOR = -100
-REWARD_GEM = 500
-REWARD_NOTHING = 10
+REWARD_METEOR = -50
+REWARD_GEM = 20
+REWARD_NOTHING = 0
 
 class Environment:
     def __init__(self, text):
