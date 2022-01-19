@@ -10,18 +10,18 @@ MAP = """
     ##o##
     ##o##
     ##To#
-    ###T#
+    ###M#
     ###o#
-    T#T#T
-    ##o#T
-    #TT##
+    M#M#M
+    ##o#M
+    #MM##
     ####o
 """
 
 VOID = '#'
 START = '.'
-COIN = 'o'
-TREE =  'T'
+GEM = 'o'
+METEOR =  'M'
 
 NOTHING = 'N'
 LEFT = 'L'
@@ -29,8 +29,8 @@ RIGHT = 'R'
 ACTIONS = [NOTHING, LEFT, RIGHT]
 
 REWARD_OUT = -100
-REWARD_TREE = -50
-REWARD_COIN = 50
+REWARD_METEOR = -100
+REWARD_GEM = 500
 REWARD_NOTHING = 10
 
 class Environment:
@@ -67,10 +67,10 @@ class Environment:
             new_state = (state[0] + 1, state[1] + 1)
 
         if new_state in self.__states:
-            if self.__states[new_state] == TREE:
-                reward = REWARD_TREE
-            elif self.__states[new_state] == COIN:
-                reward = REWARD_COIN
+            if self.__states[new_state] == METEOR:
+                reward = REWARD_METEOR
+            elif self.__states[new_state] == GEM:
+                reward = REWARD_GEM
             else:
                 reward = REWARD_NOTHING
             state = new_state
@@ -155,24 +155,23 @@ class Game(arcade.Window):
 
     def setup(self):
 
-        self.background = arcade.load_texture("./images/grass.jpg")
-        self.player = arcade.Sprite("./images/car.png", 1)
+        self.player = arcade.Sprite(":resources:images/animated_characters/robot/robot_idle.png", 1)
 
-        self.trees = arcade.SpriteList()
+        self.meteors = arcade.SpriteList()
         for state in self.__environment.states:
-            if self.__environment.getContent(state) == TREE:
-                sprite = arcade.Sprite("./images/tree.png", 0.5)
+            if self.__environment.getContent(state) == METEOR:
+                sprite = arcade.Sprite(":resources:images/space_shooter/meteorGrey_big4.png", 0.5)
                 sprite.center_x = (state[1] + 0.5) * SPRITE_SIZE
                 sprite.center_y = self.height - (state[0] + 0.5) * SPRITE_SIZE
-                self.trees.append(sprite)
+                self.meteors.append(sprite)
 
-        self.coins = arcade.SpriteList()
+        self.gems = arcade.SpriteList()
         for state in self.__environment.states:
-            if self.__environment.getContent(state) == COIN:
-                sprite = arcade.Sprite("./images/coin.png", 0.5)
+            if self.__environment.getContent(state) == GEM:
+                sprite = arcade.Sprite(":resources:images/items/gemYellow.png", 0.5)
                 sprite.center_x = (state[1] + 0.5) * SPRITE_SIZE
                 sprite.center_y = self.height - (state[0] + 0.5) * SPRITE_SIZE
-                self.coins.append(sprite)
+                self.gems.append(sprite)
         self.update_agent()
 
     def get_center(self, coordinates):
@@ -188,14 +187,13 @@ class Game(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_texture_rectangle(self.width / 2, self.height / 2, self.width, self.height, self.background)
-        self.trees.draw()
-        self.coins.draw()
+        self.meteors.draw()
+        self.gems.draw()
         self.player.draw()
         arcade.draw_text(f"#{self.__iteration} Score : {self.__agent.score}", 10, 10, arcade.csscolor.WHITE, 20)
 
     def on_update(self, delta_time):
-        if self.__agent.state[0] < self.__agent.environment.height:
+        if self.__agent.state[0] < self.__agent.environment.height - 1:
             action = self.__agent.best_action()
             reward = self.__agent.do(action)
             self.update_agent()
